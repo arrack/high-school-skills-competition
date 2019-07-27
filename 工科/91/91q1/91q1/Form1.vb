@@ -8,7 +8,7 @@
         showMap()
     End Sub
 
-    Public Sub initMap()
+    Private Sub initMap()
         s = New Point(0, 0)
         t = New Point(0, 0)
         For i = 1 To 9
@@ -16,10 +16,11 @@
                 map(i, j) = 0
             Next
         Next
+
         obMap = map.Clone()
     End Sub
 
-    Public Sub showMap()
+    Private Sub showMap()
         Dim k As Integer
         For i = 1 To 9
             For j = 1 To 9
@@ -47,7 +48,7 @@
         End If
     End Sub
 
-    Public Sub randMap()
+    Private Sub randMap()
 
         Dim i, max As Integer
         Dim p As Point
@@ -63,35 +64,38 @@
         obMap = map.Clone()
     End Sub
 
-    Public Sub findPath()
+    Private Sub findPath()
         Dim w As Integer = 1
-        Dim x, y As Integer
         Dim q As Queue = New Queue
 
         map(s.X, s.Y) = w
         map(t.X, t.Y) = 0
         q.Enqueue(New Point(s.X, s.Y))
 
+
         Do Until map(t.X, t.Y) > 0 Or w > 9 * 9
 
             Dim q2 As Queue = New Queue
             Do While q.Count > 0
                 'showMap()
-                'Threading.Thread.Sleep(100)
                 'Application.DoEvents()
-
+                'Threading.Thread.Sleep(100)
                 Dim p As Point = q.Dequeue()
-
+                ' 左
                 If p.X > 1 Then If map(p.X - 1, p.Y) = 0 Then map(p.X - 1, p.Y) = w + 1 : q2.Enqueue(New Point(p.X - 1, p.Y))
+                ' 右
                 If p.X < 9 Then If map(p.X + 1, p.Y) = 0 Then map(p.X + 1, p.Y) = w + 1 : q2.Enqueue(New Point(p.X + 1, p.Y))
+                ' 上
                 If p.Y > 1 Then If map(p.X, p.Y - 1) = 0 Then map(p.X, p.Y - 1) = w + 1 : q2.Enqueue(New Point(p.X, p.Y - 1))
+                ' 下
                 If p.Y < 9 Then If map(p.X, p.Y + 1) = 0 Then map(p.X, p.Y + 1) = w + 1 : q2.Enqueue(New Point(p.X, p.Y + 1))
             Loop
             q = q2.Clone()
             w += 1
         Loop
 
-        '印出路徑
+        '標示路徑
+        Dim x, y As Integer
         x = t.X
         y = t.Y
         If map(t.X, t.Y) = 0 Then
@@ -103,28 +107,30 @@
             'showMap()
             'Threading.Thread.Sleep(100)
             'Application.DoEvents()
-
             If (x = s.X And y = s.Y) Then
                 map(x, y) = -3
                 LabelResult.Text = "YES"
                 Return
             End If
-
+            ' 左
             If map(x - 1, y) = w - 1 Then
                 map(x, y) = -3
                 x -= 1
                 w -= 1
             End If
+            ' 右
             If map(x + 1, y) = w - 1 Then
                 map(x, y) = -3
                 x += 1
                 w -= 1
             End If
+            '上
             If map(x, y - 1) = w - 1 Then
                 map(x, y) = -3
                 y -= 1
                 w -= 1
             End If
+            '下
             If map(x, y + 1) = w - 1 Then
                 map(x, y) = -3
                 y += 1
@@ -132,6 +138,21 @@
             End If
         Loop
     End Sub
+
+    Private Function getRandPoint()
+        Dim find As Boolean = False
+        Dim x, y As Integer
+
+        Do While (Not find)
+            x = Rnd() * 8 + 1
+            y = Rnd() * 8 + 1
+            If map(x, y) = 0 Then
+                Return New Point(x, y)
+            End If
+        Loop
+
+        Return New Point(0, 0)
+    End Function
 
     Private Sub btnInit_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnInit.Click
         initMap()
@@ -154,21 +175,6 @@
 
         showMap()
     End Sub
-
-    Public Function getRandPoint()
-        Dim find As Boolean = False
-        Dim x, y As Integer
-
-        Do While (Not find)
-            x = Rnd() * 8 + 1
-            y = Rnd() * 8 + 1
-            If map(x, y) = 0 Then
-                Return New Point(x, y)
-            End If
-        Loop
-
-        Return New Point(0, 0)
-    End Function
 
     Private Sub btnFind_Click(ByVal sender As System.Object, ByVal e As System.EventArgs) Handles btnFind.Click
         findPath()
